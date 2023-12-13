@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Password Manager App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        h1 {text-align: center;}
+    </style>
+</head>
+<body>
+<div class="container">
+    {% if error_message %}
+    <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+        <div class="alert alert-danger" role="alert" style="max-width: 100%; text-align: center; background-color: #f84242; color: #fff; padding: 10px;">
+            {{ error_message }}
+        </div>
+    </div>
+    {% endif %}
+</div>
+<style>.password-container {
+    min-height:50px;
+}
+</style>
+
+<style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+  }
+
+  body {
+      background: linear-gradient(to bottom, #f0f0f0, #c0c0c0);
+  }
+</style>
+<div class="container">
+    <br>
+    <h1>Password Manager</h1>
+    <br>
+</div>
+<div class="container">
+    <form method="POST" action="/add">
+        <input type="email" name="email"
+               placeholder="Email" class="form-control" required>
+        <style>
+            input[type="email"] {
+                padding: 8px;
+                border: 3px solid #61abf8;
+                border-radius: 10px;
+                background-color: white;
+                font-weight: 600;
+                font-family: serif;
+                font-size: 20px;
+            }
+        </style>
+        <br>
+        <input type="text" name="site_url"
+               placeholder="Website" class="form-control" required>
+        <style>
+            input[type="text"] {
+                padding: 8px;
+                border: 3px solid #61abf8;
+                border-radius: 10px;
+                background-color: white;
+                font-weight: 600;
+                font-family: serif;
+                font-size: 20px;
+            }
+        </style>
+        <br>
+        <input type="password" name="site_password"
+               placeholder="Password" class="form-control" id="password" oninput="checkPasswordStrength(this.value)" required>
+
+        <input type="hidden" name="password_strength" value="{{ password_strength }}">
+        <style>
+            input[type="password"] {
+                padding: 8px;
+                border: 3px solid #61abf8;
+                border-radius: 10px;
+                background-color: white;
+                font-weight: 600;
+                font-family: serif;
+                font-size: 20px;
+            }
+        </style>
+        <br>
+        <style>
+            .my-button {
+              background-color: #11cf4c;
+              color: white;
+              border: none;
+              border-radius: 8px;
+              padding: 10px 20px;
+              font-size: 20px;
+              font-weight: bold;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              cursor: pointer;
+              transition: background-color 0.3s, transform 0.3s;
+              box-shadow: 0px 5px 10px rgba(0, 0, 0, 1);
+              outline: none;
+              position: relative;
+              overflow: hidden;
+            }
+
+            .my-button:hover {
+              background-color: #11cf4c;
+              border-color: #ff8933;
+              text-shadow: 2px 4px 4px rgba(0, 0, 0, 0.3);
+              transform: scale(1.1);
+              -webkit-text-stroke: 1px #11cf4c;
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+            }
+        </style>
+
+        <button class="my-button">Add</button>
+    </form>
+</div>
+<hr>
+<div class="container">
+    {% for item in password_list %}
+    <div class="password-item">
+        <br>
+        <span style="color: black; font-family: cursive; font-size: 20px; font-style: bold;">{{ item.email }}</span>
+        <br>
+        <span style="color: black; font-family: cursive; font-size: 20px; font-style: bold;">{{ item.site_url }}</span>
+        <div class="password-container">
+            <input type="password" value="{{ item.site_password }}" id="{{ item.id }}"/>
+        </div>
+        <p style="color: purple; font-family: cursive; font-size: 18px; font-weight: bold;">Password Strength:
+            {% if item.password_strength == "Very Weak" %}
+            <span style="color: red; font-family: fantasy; font-size: 20px; font-weight: normal;">Very Weak</span>
+            {% elif item.password_strength == "Weak" %}
+            <span style="color: orange; font-family: fantasy; font-size: 20px; font-weight: normal;">Weak</span>
+            {% elif item.password_strength == "Moderate" %}
+            <span style="color: blue; font-family: fantasy; font-size: 20px; font-weight: normal;">Moderate</span>
+            {% elif item.password_strength == "Strong" %}
+            <span style="color: green; font-family: fantasy; font-size: 20px; font-weight: normal;">Strong</span>
+            {% endif %}
+        </p>
+        <button onclick="myFunction({{ item.id }})" class="show-password-button">Show Password</button>
+        <style>
+            .show-password-button {
+                background-color: white;
+                color: black;
+                border: 1px solid #61abf8;
+                border-radius: 8px;
+                padding: 10px 20px;
+                font-size: 15px;
+                font-weight: bold;
+                text-transform: uppercase;
+                cursor: pointer;
+                transition: background-color 0.3s, transform 0.2s, color 0.2s;
+                outline: none;
+                text-decoration: none;
+            }
+
+            .show-password-button:hover {
+                background-color: #61abf8;
+                color: black;
+                transform: scale(1.05);
+                text-shadow: 2px 4px 4px rgba(0, 0, 0, 0.3);
+            }
+        </style>
+        <br>
+        <br>
+        <a href="/update/{{item.id}}" class="my-update-button"> Update </a>
+        <style>
+            .my-update-button {
+                background-color: white;
+                color: black;
+                border: 1px solid #17d0c1;
+                border-radius: 8px;
+                padding: 10px 20px;
+                font-size: 15px;
+                font-weight: bold;
+                text-transform: uppercase;
+                cursor: pointer;
+                transition: background-color 0.3s, transform 0.2s, color 0.2s;
+                outline: none;
+                text-decoration: none;
+            }
+
+            .my-update-button:hover {
+                background-color: #17d0c1;
+                color: black;
+                text-shadow: 2px 4px 4px rgba(0, 0, 0, 0.3);
+            }
+        </style>
+        <br>
+        <br>
+        <a href="/delete/{{item.id}}" class="my-delete-button"> Delete </a>
+        <style>
+            .my-delete-button {
+                background-color: white;
+                color: black;
+                border: 1px solid #ff5733;
+                border-radius: 8px;
+                padding: 10px 20px;
+                font-size: 15px;
+                font-weight: bold;
+                text-transform: uppercase;
+                cursor: pointer;
+                transition: background-color 0.3s, transform 0.2s, color 0.2s;
+                outline: none;
+                text-decoration: none;
+            }
+
+            .my-delete-button:hover {
+                background-color: #ff5733;
+                color: black;
+                transform: scale(1.05);
+                text-shadow: 2px 4px 4px rgba(0, 0, 0, 0.3);
+            }
+        </style>
+        {% endfor %}
+    </div>
+    <br>
+    <br>
+    <div class="text-center">
+        <a href="/export" class="btn btn-primary"> Download file</a>
+    </div>
+    <script type="text/javascript">
+        function myFunction(pid) {
+            var x = document.getElementById(pid);
+            if (x.type === "password") {
+                x.type = "text";
+            } else {
+                x.type = "password";
+            }
+            x.style.display = "block";
+        }
+    </script>
+
+</div>
+</body>
+</html>
