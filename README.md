@@ -1,2 +1,1 @@
-Password Manager 
-My first ever project.
+Password Manager. My first-ever project.
